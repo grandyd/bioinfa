@@ -1,0 +1,14 @@
+money = int(input())
+coins = input()
+coins = [int(i) for i in coins.split(',')]
+
+minimum = [0]
+minimum += [(money / min(coins))] * money
+
+for m in range(1, money + 1):
+    for coin in coins:
+        if m >= coin:
+            if minimum[m - coin] < minimum[m]:
+                minimum[m] = minimum[m - coin] + 1
+
+print(minimum[money])
