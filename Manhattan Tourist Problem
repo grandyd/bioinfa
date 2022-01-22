@@ -1,0 +1,80 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+
+int ManhattanTourist(int n, int m, vector<vector<int>>Down, vector<vector<int>>Right)
+{
+    //создаём 0матрицу
+    vector<vector<int>> Matrix;
+    vector<int> EmptyVector;
+    for (int i = 0; i < n+1; i++)
+    {
+       Matrix.push_back(EmptyVector);
+        for (int j = 0; j < m + 1; j++)
+        {
+            Matrix[i].push_back(0);
+        }
+    }
+
+    for (int i = 1; i < n+1; i++)
+    {
+        Matrix[i][0] = Matrix[i - 1][0] + Down[i - 1][0];
+    }
+    for (int i = 1; i < m + 1; i++)
+    {
+        Matrix[0][i] = Matrix[0][i-1] + Right[0][i-1];
+    }
+
+    for (int i = 1; i < n+1; i++)
+    {
+        for (int j = 1; j < m+1; j++)
+        {
+            Matrix[i][j] = max(Matrix[i - 1][j] + Down[i - 1][j], Matrix[i][j - 1] + Right[i][j - 1]);
+        }
+    }
+
+    return Matrix[n][m];
+}
+
+
+
+
+
+
+
+
+int main()
+{
+    int n, m;
+    char s;
+    int tmp;
+    cin >> n >> m;
+    vector<vector<int>>Down, Right;
+    vector<int> EmptyVector;
+
+    //заполненеи down
+    for (int i = 0; i < n; i++)
+    {
+        Down.push_back(EmptyVector);
+        for (int j = 0; j < m+1; j++)
+        {
+            cin >> tmp;
+            Down[i].push_back(tmp);
+        }
+    }
+    cin >> s;
+    //заполнение right
+    for (int i = 0; i < n+1; i++)
+    {
+        Right.push_back(EmptyVector);
+        for (int j = 0; j < m; j++)
+        {
+            cin >> tmp;
+            Right[i].push_back(tmp);
+        }
+    }
+    cout << ManhattanTourist(n,m, Down, Right);
+
+}
