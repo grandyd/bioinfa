@@ -1,0 +1,208 @@
+#include <iostream>
+#include <string.h>
+#include <vector>
+#include <map>
+#include <list>
+
+using namespace std;
+
+
+
+struct tst
+{
+    char cur;
+
+    tst()
+    {
+        cur = 'A';
+    }
+
+    void inc()
+    {
+        if (cur == 'A')
+        {
+            cur = 'C';
+        }
+        else if (cur == 'C')
+        {
+            cur = 'G';
+        }
+        else if (cur == 'G')
+        {
+            cur = 'T';
+        }
+        else
+        {
+            cur = 'A';
+        }
+    }
+};
+
+void bla(int k, int asd, vector<tst>& ptr)
+{
+    asd++;
+    if (asd == k)
+    {
+        return;
+    }
+    if (ptr[ptr.size() - asd].cur == 'A')
+    {
+        ptr[ptr.size() - asd - 1].inc();
+        bla(k, asd, ptr);
+    }
+    return;
+}
+
+
+
+int main()
+{
+    map<int, vector<string>> Patterns;
+    vector<bool> flag;
+    int counter = 0;
+    int counter1 = 0;
+    int k, d;
+    cin >> k >> d;
+    string tmp, str;
+    vector<string> dna;
+    while (cin)
+    {
+        cin >> tmp;
+        dna.push_back(tmp);
+    }
+    dna.pop_back();
+    for (int i = 0; i < dna.size(); i++)
+    {
+        flag.push_back(false);
+    }
+    bool flag1 = false, flag2 = false;
+    vector<string> pattern;
+
+
+
+
+    vector<tst> ptr;
+
+
+    for (int i = 0; i < k; i++)
+    {
+        ptr.push_back(tst());
+    }
+
+
+    int asd = 0;
+
+    string t1;
+
+    vector<string> patternZ;
+
+
+    //ПЕРЕБОР ВСЕХ ПАТТЕРНОВ
+    while (ptr[0].cur != 'T')
+    {
+        asd = 0;
+        for (int i = 0; i < 4; i++)
+        {
+            if (i != 4)
+            {
+                for (int i = 0; i < k; i++)
+                {
+                    t1 += ptr[i].cur;
+                }
+            }
+            patternZ.push_back(t1);
+            t1 = "";
+            if (ptr[0].cur == 'T')
+            {
+                break;
+            }
+            ptr[ptr.size() - asd - 1].inc();
+        }
+        bla(k, asd, ptr);
+    }
+    if (ptr.size() > 1)
+    {
+        while (ptr[0].cur != 'A')
+        {
+            asd = 0;
+            for (int i = 0; i < 4; i++)
+            {
+                if (i != 4)
+                {
+                    for (int i = 0; i < k; i++)
+                    {
+                        t1 += ptr[i].cur;
+                    }
+                }
+                patternZ.push_back(t1);
+                t1 = "";
+
+                ptr[ptr.size() - asd - 1].inc();
+            }
+            bla(k, asd, ptr);
+        }
+    }
+    //
+
+    //patternZ-один из паттернов промежутка AA..AA -> TT..TT
+    for (int i = 0; i < patternZ.size(); i++)
+    {
+        str = patternZ[i];
+            for (int z = 0; z < dna.size(); z++)//перебор всех строк
+            {
+                for (int vopros = 0; vopros < dna[0].size() - k + 1; vopros++)//перебор всех подстрок в строке
+                {
+                    tmp = dna[z].substr(vopros, k);//tmp-подстрока 
+                    for (int l = 0; l < k; l++)//находим количество не совпавших символов tmp с нашим паттерном
+                    {
+                        if (tmp[l] != str[l])
+                        {
+                            counter++;
+                        }
+                    }
+
+                    if (counter <= d)//если наши подстроки отличаются не более чем на d символов, то берём, иначе берём след. построку
+                    {
+                        flag[z] = true;
+                        counter = 0;
+                        break;
+                    }
+                    counter = 0;
+                }
+            }
+            for (int n = 0; n < dna.size(); n++)//проверяем во всех ли строках нашлась подстрока, которая отличается от str не более чем на d символов
+            {
+                if (flag[n] == true)
+                {
+                    counter1++;
+                }
+
+            }
+            if (counter1 == dna.size())//если подстрока нашласась во всех строках, то добавляем её в ответ
+            {
+                pattern.push_back(str);
+
+                //зануление счётчиков
+                counter1 = 0;
+                counter = 0;
+                for (int i = 0; i < dna.size(); i++)
+                {
+                    flag[i] = false;
+                }
+                continue;
+            }
+            //зануление счётчиков
+            counter1 = 0;
+            counter = 0;
+            for (int i = 0; i < dna.size(); i++)
+            {
+                flag[i] = false;
+            }
+    }
+
+    for (int i = 0; i < pattern.size(); i++)
+    {
+        cout << pattern[i] << " ";
+    }
+
+}
