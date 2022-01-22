@@ -1,0 +1,67 @@
+#include <string>
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+vector<vector<int>> LCSBacktrack(string v, string w)
+{
+    vector<vector<int>> s;
+    vector<int> EmptyVec;
+    for (int i = 0; i < v.length()+1; i++)
+    {
+        s.push_back(EmptyVec);
+        for (int j = 0; j < w.length()+1; j++)
+        {
+            s[i].push_back(0);
+        }
+    }
+
+    for (int i = 1; i < v.length()+1; i++)
+    {
+        for (int j = 1; j < w.length()+1; j++)
+        {
+            if (v[i-1]==w[j-1])
+            {
+                s[i][j] = s[i-1][j-1] + 1;
+            }
+            else
+            {
+                s[i][j] = max(s[i-1][j], s[i][j-1]);
+            }
+        }
+    }
+
+    return s;
+}
+
+
+void OutputLCS(vector<vector<int>> s, string v, int i, int j)
+{
+    if (i==0 || j==0)
+    {
+        return;
+    }
+    if (s[i][j]==s[i-1][j])
+    {
+        OutputLCS(s, v, i - 1, j);
+    }
+    else if (s[i][j]==s[i][j-1])
+    {
+        OutputLCS(s, v, i, j - 1);
+    }
+    else
+    {
+        OutputLCS(s, v, i - 1, j - 1);
+        cout << v[i-1];
+    }
+}
+
+int main()
+{
+    string v, w;
+    cin >> v;
+    cin >> w;
+    
+    OutputLCS(LCSBacktrack(v, w), v, v.length(), w.length());
+}
