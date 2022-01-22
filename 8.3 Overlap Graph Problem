@@ -1,0 +1,50 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+bool check(pair<string, string> my_pair)
+{
+	string str1 = my_pair.first.substr(1, my_pair.first.length() - 1);
+	string str2 = my_pair.second.substr(0, my_pair.second.length() - 1);
+	if (str1==str2)
+	{
+		return true;
+	}
+	return false;
+}
+
+int main()
+{
+    string tmp;
+    vector<string> Patterns;
+	while (cin)
+	{
+		cin >> tmp;
+		Patterns.push_back(tmp);
+	}
+	Patterns.pop_back();
+
+	vector<pair<string,string>> pairs;
+
+	for (int i = 0; i < Patterns.size(); i++)
+	{
+		for (int j = 0; j < Patterns.size(); j++)
+		{
+			if (i!=j)
+			{
+				if (check(make_pair(Patterns[i], Patterns[j])))
+				{
+					pairs.push_back(make_pair(Patterns[i], Patterns[j]));
+				}
+				
+			}
+		}
+	}
+
+	for (int i = 0; i < pairs.size(); i++)
+	{
+		cout << pairs[i].first << " -> " << pairs[i].second << endl;
+	}
+}
