@@ -1,0 +1,206 @@
+#include <vector>
+#include <string>
+#include <iostream>
+#include <map>
+
+using namespace std;
+
+
+
+int score(vector<string> motifs)
+{
+    int scr = 0;  
+    int max = 0, maxi = 0;
+
+    map<char, int> table;
+    table['A'] = 0;
+    table['C'] = 0;
+    table['G'] = 0;
+    table['T'] = 0;
+
+    //создаём наиболее вероятную строку
+    vector<char> core;
+    for (int i = 0; i < motifs[0].length(); i++)
+    {
+        for (int j = 0; j < motifs.size(); j++)
+        {
+            table[motifs[j][i]]++;
+        }
+            
+        if (table['A'] >= table['C'] && table['A'] >= table['G'] && table['A'] >= table['T'])
+        {
+            core.push_back('A');
+            scr += table['C'] + table['G'] + table['T'];
+        }
+        else if(table['C'] >= table['A'] && table['C'] >= table['G'] && table['C'] >= table['T'])
+        {
+            core.push_back('C');
+            scr += table['A'] + table['G'] + table['T'];
+        }
+        else if (table['G'] >= table['A'] && table['G'] >= table['C'] && table['G'] >= table['T'])
+        {
+            core.push_back('G');
+            scr += table['C'] + table['A'] + table['T'];
+        }
+        else
+        {
+            core.push_back('T');
+            scr += table['C'] + table['A'] + table['G'];
+        }
+        table['A'] = 0;
+        table['C'] = 0;
+        table['G'] = 0;
+        table['T'] = 0;
+    }
+    return scr;
+
+}
+
+string profile_most_probable_kmer(string dna,int k,vector<vector<double>> Matrix)
+{
+    vector<string> Kmer;
+    vector<double> Probability;
+
+    double tmp;
+
+
+    for (int i = 0; i < dna.size() - k + 1; i++)
+    {
+        Kmer.push_back(dna.substr(i, k));
+    }
+
+    double probability;
+
+    map<char, int> table;
+    table['A'] = 0;
+    table['C'] = 1;
+    table['G'] = 2;
+    table['T'] = 3;
+
+
+
+    for (int i = 0; i < Kmer.size(); i++)
+    {
+        if (Kmer[i]=="CCCTC")
+        {
+            cout << "";
+        }
+        probability = 1;
+        for (int j = 0; j < k; j++)
+        {
+            int letter = table.find(Kmer[i][j])->second;
+            double mnozhitel = Matrix[j][letter];
+            probability *= mnozhitel;
+            if (probability==0)
+            {
+                break;
+            }
+        }
+        Probability.push_back(probability);
+    }
+
+    int maxi = 0;
+    double max = Probability[0];
+
+    for (int i = 0; i < Probability.size(); i++)
+    {
+        if (max < Probability[i])
+        {
+            max = Probability[i];
+            maxi = i;
+        }
+    }
+    return Kmer[maxi];
+}
+
+vector<vector<double>> profile(vector<string> motif)
+{
+    vector<vector<double>> prof;
+    vector<double> EmptyVec;
+
+    map<char, double> table;
+    table['A'] = 0;
+    table['C'] = 0;
+    table['G'] = 0;
+    table['T'] = 0;
+
+
+    string tmp;
+
+    for (int i = 0; i < motif[0].length(); i++)
+    {
+        for (int k = 0; k < motif.size(); k++)
+        {
+            tmp.push_back(motif[k][i]);
+        }
+        for (int i = 0; i < tmp.length(); i++)
+        {
+            table[tmp[i]]++;
+        }
+        prof.push_back(EmptyVec);
+        prof[i].push_back((table['A']+1) / (tmp.length()+4));
+        prof[i].push_back((table['C']+1) / (tmp.length()+4));
+        prof[i].push_back((table['G']+1) / (tmp.length()+4));
+        prof[i].push_back((table['T']+1) / (tmp.length()+4));
+
+        table['A'] = 0;
+        table['C'] = 0;
+        table['G'] = 0;
+        table['T'] = 0;
+        tmp = "";
+    }
+    return prof;
+
+}
+
+
+int main()
+{
+    setlocale(LC_ALL, "ru");
+
+    int k, t;
+    string tmp;
+	vector<string> dna;
+    vector<string> motifs;
+    vector<vector<double>> current_profile;
+    cin >> k >> t;
+    while (cin)
+    {
+        cin >> tmp;
+        dna.push_back(tmp);
+    }
+    dna.pop_back();
+    int current_score;
+
+    double best_score1=99999999999;
+    vector<string> best_score2;
+
+    for (int i = 0; i < dna[0].size() - k + 1; i++)
+    {
+        motifs.clear();
+        motifs.push_back(dna[0].substr(i, k));
+        current_profile = profile(motifs);
+        if (motifs[0]=="CCCTC")
+        {
+            cout << "";
+        }
+
+        for (int j = 1; j < t; j++)
+        {
+            motifs.push_back(profile_most_probable_kmer(dna[j], k, current_profile));
+            current_profile = profile(motifs);
+        }
+
+        current_score = score(motifs);
+        if (current_score < best_score1)
+        {
+            best_score1 = current_score;
+            best_score2 = motifs;
+        }
+    }
+    for (int i = 0; i < t; i++)
+    {
+        cout << best_score2[i] << endl;
+    }
+return 0;
+}
