@@ -1,0 +1,78 @@
+#include <iostream>
+#include <string.h>
+#include <vector>
+#include <map>
+#include <list>
+
+using namespace std;
+
+
+int main()
+{
+	string Text;
+	cin >> Text;
+	int k;
+	cin >> k;
+	vector<vector<double>> Matrix;
+	vector<double> EmptyVec;
+	vector<string> Kmer;
+	vector<double> Probability;
+
+	double tmp;
+
+	Matrix.push_back(EmptyVec);
+	Matrix.push_back(EmptyVec);
+	Matrix.push_back(EmptyVec);
+	Matrix.push_back(EmptyVec);
+	
+	for (int j = 0; j < 4; j++)
+	{
+		for (int i = 0; i < k; i++)
+		{
+			cin >> tmp;
+			Matrix[j].push_back(tmp);
+		}
+	}
+
+	for (int i = 0; i < Text.size()-k+1; i++)
+	{
+		Kmer.push_back(Text.substr(i, k));
+	}
+	
+	double probability;
+
+	map<char, int> table;
+	table['A'] = 0;
+	table['C'] = 1;
+	table['G'] = 2;
+	table['T'] = 3;
+
+
+
+	for (int i = 0; i < Kmer.size(); i++)
+	{
+		probability = 1;
+		for (int j = 0; j < k; j++)
+		{
+			int letter = table.find(Kmer[i][j])->second;
+			double mnozhitel = Matrix[letter][j];
+			probability *= mnozhitel;
+		}
+		Probability.push_back(probability);
+	}
+
+	int maxi=0;
+	double max=Probability[0];
+
+	for (int i = 0; i < Probability.size(); i++)
+	{
+		if (max<Probability[i])
+		{
+			max = Probability[i];
+			maxi = i;
+		}
+	}
+	cout << Kmer[maxi];
+	return 0;
+
+}
