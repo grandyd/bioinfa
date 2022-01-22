@@ -1,0 +1,37 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <stdlib.h>
+#include <sstream>
+using namespace std;
+
+int main()
+{
+	vector<string> Sequence;
+
+	string tmp="asd";
+	while (std::cin)
+	{
+		//cin >> tmp;
+		getline(cin, tmp);
+		Sequence.push_back(tmp);
+	}
+	Sequence.pop_back();
+	
+	
+	int k = Sequence[0].length() - 1;
+
+	string Text="";
+	Text += Sequence[0].substr(0, k-1);
+
+	for (int i = k-1; i < Sequence.size()-1; i++)
+	{
+		Text += Sequence[i][0];
+	}
+	Text += Sequence[Sequence.size()-1];
+
+	cout << Text;
+
+
+	return 0;
+}
