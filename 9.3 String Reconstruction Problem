@@ -1,0 +1,84 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <string.h>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main()
+{
+    int k;
+    vector<string> Patterns;
+    vector<string> Result;
+    string Text;
+
+    //ввели данные
+    cin >> k;
+    string tmp;
+    while (cin)
+    {
+        cin >> tmp;
+        Patterns.push_back(tmp);
+    }
+    Patterns.pop_back();
+    bool flag = false;
+
+    int targer_size = Patterns.size();
+
+    //нашли первый Kmer
+    for (int i = 0; i < Patterns.size(); i++)
+    {
+        tmp = Patterns[i];
+        for (int j = 0; j < Patterns.size(); j++)
+        {
+            if (i!=j)
+            {
+                if (strcmp(tmp.substr(0,tmp.size()-1).c_str(),Patterns[j].substr(1,tmp.size()-1).c_str())==0)
+                {
+                    flag = true;
+                    break;
+                }
+            }
+            
+        }
+        if (flag==false)
+        {
+            Result.push_back(tmp);
+            Patterns.erase(Patterns.begin() + i);
+            break;
+        }
+        flag = false;
+    }
+
+    //ищем некст
+    while (Result.size() != targer_size)
+    {
+
+
+        for (int i = Result.size(); i < Patterns.size() + Result.size(); i++)
+        {
+            tmp = Result[i-1];
+            for (int j = 0; j < Patterns.size(); j++)
+            {
+                if (strcmp(tmp.substr(1, tmp.size() - 1).c_str(), Patterns[j].substr(0, tmp.size() - 1).c_str()) == 0)
+                {
+                    Result.push_back(Patterns[j]);
+                    Patterns.erase(Patterns.begin() + j);
+                    flag = true;
+                    break;
+                }
+            }
+            if (flag==true)
+            {
+                flag = false;
+                break;
+            }
+        }
+    }
+
+    cout << Result[0];
+    for (int i = 1; i < Result.size(); i++)
+    {
+        cout << Result[i][k-1];
+    }
+
+}
