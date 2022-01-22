@@ -1,0 +1,181 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <string.h>
+#include <vector>
+#include <map>
+#include <iostream>
+
+using namespace std;
+
+void eulerian_cycle(map<int, vector<int>> dict)
+{
+	int current_node = dict.begin()->first;
+
+	vector<int> Eul_Cycle;
+	Eul_Cycle.push_back(current_node);
+
+
+	while (true)
+	{
+		Eul_Cycle.push_back(dict[current_node][0]);
+		if (dict[current_node].size() == 1)
+		{
+			auto it = dict.find(current_node);
+			dict.erase(it);
+		}
+		else
+		{
+			dict[current_node].erase(dict[current_node].begin());
+		}
+
+		if (dict.find(Eul_Cycle[Eul_Cycle.size()-1])!= dict.end())
+		{
+			current_node = dict.find(Eul_Cycle[Eul_Cycle.size() - 1])->first;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	vector<int> tmp_vec;
+
+	while (dict.size()>0)
+	{
+		for (int i = 0; i < Eul_Cycle.size(); i++)
+		{
+			if (dict.find(Eul_Cycle[i])!=dict.end())
+			{
+				current_node = Eul_Cycle[i];
+				tmp_vec.push_back(current_node);
+
+				while (true)
+				{
+					tmp_vec.push_back(dict[current_node][0]);
+					if (dict[current_node].size() == 1)
+					{
+						auto it = dict.find(current_node);
+						dict.erase(it);
+					}
+					else
+					{
+						dict[current_node].erase(dict[current_node].begin());
+					}
+
+					if (dict.find(tmp_vec[tmp_vec.size() - 1]) != dict.end())
+					{
+						current_node = dict.find(tmp_vec[tmp_vec.size() - 1])->first;
+					}
+					else
+					{
+						break;
+					}
+				}
+
+				//вставляем tmp_vec в Eul_Cycle
+				vector<int> tmp_vec1;
+				for (int j = 0; j < i; j++)
+				{
+					tmp_vec1.push_back(Eul_Cycle[j]);
+					if (j+1==i)
+					{
+						for (int k = 0; k < tmp_vec.size(); k++)
+						{
+							tmp_vec1.push_back(tmp_vec[k]);
+						}
+						for (int k = j+2; k < Eul_Cycle.size(); k++)
+						{
+							tmp_vec1.push_back(Eul_Cycle[k]);
+						}
+					}
+				}
+				Eul_Cycle = tmp_vec1;
+				tmp_vec.clear();
+
+				break;
+
+			}
+		}
+	}
+
+	for (int i = 0; i < Eul_Cycle.size(); i++)
+	{
+		cout << Eul_Cycle[i];
+		if (i+1!= Eul_Cycle.size())
+		{
+			cout << "->";
+		}
+	}
+}
+
+void NormalbniyVid(string& str)
+{
+	for (int i = 0; i < str.size()-3; i++)
+	{
+		if (strcmp((char*)str.substr(i, 3).c_str(), " ->")==0)
+		{
+			str.erase(i,3);
+			str.insert(i, " ");
+			break;
+		}
+		
+	}
+
+	for (int i = 0; i < str.size(); i++)
+	{
+		if (str[i] == ',')
+		{
+			str[i] = ' ';
+			continue;
+		}
+	}
+
+}
+
+
+int main()
+{
+	vector<string> text;
+	vector<int> EmptyVector;
+	string tmp;
+
+	//вводим текст и приводим к человеческому виду
+	while (cin)
+	{
+		getline(cin, tmp);
+		text.push_back(tmp);
+	}
+	text.pop_back();
+	for (int i = 0; i < text.size(); i++)
+	{
+		NormalbniyVid(text[i]);
+	}
+
+	map<int, vector<int>> dict;
+	
+	for (int i = 0; i < text.size(); i++)
+	{
+		tmp = text[i];
+		string tmp2="";
+		int j = 0;
+		while (tmp[j]!=' ')
+		{
+			tmp2 += tmp[j++];
+		}
+		j+=2;
+		dict[atoi(tmp2.c_str())] = EmptyVector;
+		string tmp3 = "";
+		for (int k = j; k < tmp.size(); k++)
+		{
+			if (tmp[k]==' ')
+			{
+				dict[atoi(tmp2.c_str())].push_back(atoi(tmp3.c_str()));
+				tmp3 = "";
+				continue;
+			}
+			tmp3 += tmp[k];
+		}
+		dict[atoi(tmp2.c_str())].push_back(atoi(tmp3.c_str()));
+	}
+
+	eulerian_cycle(dict);
+}
